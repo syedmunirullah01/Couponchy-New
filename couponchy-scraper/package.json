@@ -1,0 +1,20 @@
+{
+  "name": "couponchy-scraper",
+  "version": "1.0.0",
+  "description": "AI Coupon Scraper and Validator Microservice",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.42.1"
+  }
+}

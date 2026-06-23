@@ -1,0 +1,34 @@
+[
+  {
+    "id": "category_beauty",
+    "name": "Beauty112",
+    "slug": "beauty112",
+    "description": "",
+    "createdAt": "2026-03-18T01:59:31.188Z",
+    "updatedAt": "2026-04-03T22:03:34.376Z"
+  },
+  {
+    "id": "category_electronics",
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "",
+    "createdAt": "2026-03-18T01:59:31.188Z",
+    "updatedAt": "2026-03-18T02:39:58.003Z"
+  },
+  {
+    "id": "category_fashion",
+    "name": "Fashion2",
+    "slug": "fashion",
+    "description": "",
+    "createdAt": "2026-03-22T14:06:12.303Z",
+    "updatedAt": "2026-04-03T22:01:12.879Z"
+  },
+  {
+    "id": "category_test",
+    "name": "test",
+    "slug": "test",
+    "description": "",
+    "createdAt": "2026-04-05T20:58:44.417Z",
+    "updatedAt": "2026-04-05T20:58:44.417Z"
+  }
+]
