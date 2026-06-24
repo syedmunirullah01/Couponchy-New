@@ -31,15 +31,15 @@ function ChevronIcon({ open }) {
 
 export default function RegionSelector() {
   const [open, setOpen] = useState(false);
-  const [selectedCode, setSelectedCode] = useState(() => {
-    if (typeof window === "undefined") {
-      return REGIONS[0].code;
-    }
-
-    const savedRegion = window.localStorage.getItem(STORAGE_KEY);
-    return savedRegion && REGIONS.some((region) => region.code === savedRegion) ? savedRegion : REGIONS[0].code;
-  });
+  const [selectedCode, setSelectedCode] = useState(REGIONS[0].code);
   const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const savedRegion = window.localStorage.getItem(STORAGE_KEY);
+    if (savedRegion && REGIONS.some((region) => region.code === savedRegion)) {
+      setSelectedCode(savedRegion);
+    }
+  }, []);
 
   useEffect(() => {
     function handlePointerDown(event) {

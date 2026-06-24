@@ -14,5 +14,21 @@
     "status": "Active",
     "createdAt": "2026-04-03T22:49:09.938Z",
     "updatedAt": "2026-04-03T22:49:09.938Z"
+  },
+  {
+    "id": "product_addidas_y2t2ty8i",
+    "slug": "adidas-ultraboost-light",
+    "storeSlug": "addidas",
+    "storeName": "Addidas",
+    "title": "Adidas Ultraboost Light",
+    "description": "Experience epic energy with the new Adidas Ultraboost Light, the lightest Ultraboost ever made.",
+    "image": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80",
+    "price": 139.99,
+    "originalPrice": 189.99,
+    "ctaLabel": "View Product",
+    "productUrl": "/stores/store/addidas/products/adidas-ultraboost-light",
+    "status": "Active",
+    "createdAt": "2026-06-24T11:16:37.000Z",
+    "updatedAt": "2026-06-24T11:16:37.000Z"
   }
 ]

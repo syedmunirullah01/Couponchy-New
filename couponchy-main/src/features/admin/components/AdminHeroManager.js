@@ -15,6 +15,14 @@ const initialHeroState = {
   searchButtonLabel: "Search Offers",
   memberCountText: "Join 126k+ members saving daily",
   slides: [],
+  middleBanner: {
+    imageUrl: "",
+    targetUrl: "/coupons",
+  },
+  bottomBanner: {
+    imageUrl: "",
+    targetUrl: "/coupons",
+  },
 };
 
 function SectionField({ label, children, hint }) {
@@ -52,6 +60,46 @@ export default function AdminHeroManager() {
   const [hero, setHero] = useState(initialHeroState);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+
+  async function handleBannerUpload(type, file) {
+    if (!file) return;
+
+    const acceptedTypes = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
+    if (!acceptedTypes.includes(file.type)) {
+      toast.error("Banner image must be PNG, JPG, WEBP, or SVG.");
+      return;
+    }
+
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Banner image must be 4MB or smaller.");
+      return;
+    }
+
+    try {
+      setIsUploadingBanner(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("slug", `homepage-${type.replace("Banner", "")}-banner`);
+
+      const response = await fetch("/api/uploads/promo-banner", {
+        method: "POST",
+        body: formData,
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || "Unable to upload banner image.");
+      }
+
+      updatePromoBannerField(type, "imageUrl", payload.data.secureUrl);
+      toast.success("Banner image uploaded successfully.");
+    } catch (uploadError) {
+      toast.error(uploadError.message || "Unable to upload banner image.");
+    } finally {
+      setIsUploadingBanner(false);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -66,7 +114,18 @@ export default function AdminHeroManager() {
         }
 
         if (active) {
-          setHero(payload.data);
+          setHero({
+            ...initialHeroState,
+            ...payload.data,
+            middleBanner: {
+              ...initialHeroState.middleBanner,
+              ...payload.data?.middleBanner,
+            },
+            bottomBanner: {
+              ...initialHeroState.bottomBanner,
+              ...payload.data?.bottomBanner,
+            },
+          });
         }
       } catch (error) {
         toast.error(error.message);
@@ -88,6 +147,16 @@ export default function AdminHeroManager() {
     setHero((current) => ({
       ...current,
       [field]: value,
+    }));
+  }
+
+  function updatePromoBannerField(type, field, value) {
+    setHero((current) => ({
+      ...current,
+      [type]: {
+        ...current[type],
+        [field]: value,
+      },
     }));
   }
 
@@ -157,7 +226,18 @@ export default function AdminHeroManager() {
         throw new Error(payload.error || "Unable to save hero settings.");
       }
 
-      setHero(payload.data);
+      setHero({
+        ...initialHeroState,
+        ...payload.data,
+        middleBanner: {
+          ...initialHeroState.middleBanner,
+          ...payload.data?.middleBanner,
+        },
+        bottomBanner: {
+          ...initialHeroState.bottomBanner,
+          ...payload.data?.bottomBanner,
+        },
+      });
       toast.success("Hero settings saved.");
     } catch (error) {
       toast.error(error.message);
@@ -219,6 +299,74 @@ export default function AdminHeroManager() {
                 />
               </SectionField>
             </div>
+          </div>
+        </SettingsSection>
+
+        <SettingsSection
+          title="Homepage Middle Promotional Banner"
+          description="Upload a custom banner image shown in the middle of the homepage (between Featured Coupons and Featured Products)."
+        >
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <SectionField label="Middle Banner Image" hint="Upload custom banner image. Recommended size: 1200 x 150 pixels (approx. 8:1 ratio) for pixel-perfect display. Acceptable formats: PNG, JPG, WEBP, SVG.">
+                <div className="grid gap-3">
+                  {hero.middleBanner?.imageUrl ? (
+                    <div className="relative h-24 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={hero.middleBanner.imageUrl} 
+                        alt="Middle Banner Preview" 
+                        className="h-full w-full object-cover" 
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-24 items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-soft)] text-sm text-[var(--muted)]">
+                      No middle banner image uploaded yet.
+                    </div>
+                  )}
+                  
+                  <div className="flex flex-wrap gap-3">
+                    <label className="inline-flex cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                        className="hidden"
+                        onChange={(event) => handleBannerUpload("middleBanner", event.target.files?.[0])}
+                        disabled={isUploadingBanner}
+                      />
+                      <span className="inline-flex h-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-medium text-[var(--text)] transition hover:bg-[var(--surface-soft)]">
+                        {isUploadingBanner ? "Uploading..." : "Upload Image"}
+                      </span>
+                    </label>
+                    {hero.middleBanner?.imageUrl ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="rounded-lg border border-[var(--border)]"
+                        onClick={() => updatePromoBannerField("middleBanner", "imageUrl", "")}
+                        disabled={isUploadingBanner}
+                      >
+                        Remove Image
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              </SectionField>
+            </div>
+
+            <SectionField label="Middle Banner Image URL" hint="Direct URL to middle banner image.">
+              <Input
+                value={hero.middleBanner?.imageUrl ?? ""}
+                onChange={(event) => updatePromoBannerField("middleBanner", "imageUrl", event.target.value)}
+              />
+            </SectionField>
+
+            <SectionField label="Middle Banner Redirect URL" hint="Target URL for middle banner clicks (e.g. /coupons).">
+              <Input
+                value={hero.middleBanner?.targetUrl ?? ""}
+                onChange={(event) => updatePromoBannerField("middleBanner", "targetUrl", event.target.value)}
+              />
+            </SectionField>
           </div>
         </SettingsSection>
 

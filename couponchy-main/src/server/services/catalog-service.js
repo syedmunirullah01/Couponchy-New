@@ -499,6 +499,8 @@ export async function getHomePageData(countryCode) {
   const scopedProducts = products.filter((product) => allowedStoreSlugs.has(product.storeSlug));
   const homepageSections = settings.homepage.sections;
 
+  const storeMap = new Map(scopedStores.map((store) => [store.slug, store]));
+
   const latestStoresSource =
     homepageSections.latestStores.selectedStoreSlugs?.length
       ? orderItemsBySelection(scopedStores, homepageSections.latestStores.selectedStoreSlugs, (store) => store.slug)
@@ -527,6 +529,9 @@ export async function getHomePageData(countryCode) {
       code: store.name.slice(0, 1).toUpperCase(),
       href: `/stores/${store.categorySlug}/${store.slug}`,
       offersCount: store.offersCount,
+      category: store.category,
+      categorySlug: store.categorySlug,
+      logoImage: store.logoImage,
     })),
     trendingStoresTitle: homepageSections.trendingStores.title,
     trendingStores: trendingStoresSource.slice(0, homepageSections.trendingStores.limit).map((store) => ({
@@ -540,14 +545,25 @@ export async function getHomePageData(countryCode) {
       trustStatus: store.trustStatus,
     })),
     featuredCouponsTitle: homepageSections.featuredCoupons.title,
-    featuredCoupons: featuredOffersSource.slice(0, homepageSections.featuredCoupons.limit).map((offer, index) => ({
-      id: offer.id,
-      brand: offer.storeName,
-      tag: offer.status,
-      value: offer.type === "Deal" ? "GET DEAL" : offer.code || "SAVE NOW",
-      description: offer.description,
-      highlight: index === 1,
-    })),
+    featuredCoupons: featuredOffersSource.slice(0, homepageSections.featuredCoupons.limit).map((offer, index) => {
+      const offerStore = storeMap.get(offer.storeSlug);
+      return {
+        id: offer.id,
+        brand: offer.storeName,
+        brandSlug: offer.storeSlug,
+        categorySlug: offerStore ? offerStore.categorySlug : "all",
+        tag: offer.status,
+        type: offer.type,
+        code: offer.code,
+        title: normalizeOfferTitle(offer),
+        value: offer.type === "Deal" ? "GET DEAL" : offer.code || "SAVE NOW",
+        description: offer.description,
+        highlight: index === 1,
+        affiliateLink: offer.affiliateLink || null,
+        storeAffiliateLink: offerStore?.affiliateLink || null,
+        countryCode: offerStore?.countryCode || null,
+      };
+    }),
     featuredProductsTitle: homepageSections.featuredProducts.title,
     featuredProducts: featuredProductsSource.slice(0, homepageSections.featuredProducts.limit).map((product) => ({
       id: product.id,

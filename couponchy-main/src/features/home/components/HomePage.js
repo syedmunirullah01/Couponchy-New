@@ -4,6 +4,8 @@ import FeaturedProductsSection from "./FeaturedProductsSection";
 import HeroSection from "./HeroSection";
 import LatestStoresSection from "./LatestStoresSection";
 import TrendingStoresSection from "./TrendingStoresSection";
+import PromoBanner from "./PromoBanner";
+import TestimonialsSection from "./TestimonialsSection";
 
 export default function HomePage({
   hero,
@@ -22,8 +24,10 @@ export default function HomePage({
       <ActivityMarqueeSection />
       <TrendingStoresSection trendingStores={trendingStores} title={trendingStoresTitle} />
       <FeaturedCouponsSection featuredCoupons={featuredCoupons} title={featuredCouponsTitle} />
+      <PromoBanner promoBanner={hero?.middleBanner} />
       <FeaturedProductsSection featuredProducts={featuredProducts} title={featuredProductsTitle} />
       <LatestStoresSection latestStores={latestStores} title={latestStoresTitle} />
+      <TestimonialsSection />
     </div>
   );
 }

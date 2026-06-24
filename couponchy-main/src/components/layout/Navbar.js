@@ -19,7 +19,9 @@ import {
 
 const PRIMARY_NAV = [
   { label: "Find Deals", href: "/stores", kind: "mega" },
+  { label: "Events", kind: "events" },
   { label: "Exclusive", href: "/exclusive" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const POPULAR_STORE_NAMES = ["Nike", "Old Navy", "Fashion Nova", "SHEIN", "SKIMS", "DSW", "Carter's"];
@@ -172,24 +174,27 @@ export default function Navbar() {
   const [mobileDealsOpen, setMobileDealsOpen] = useState(false);
   const [mobileActiveCategorySlug, setMobileActiveCategorySlug] = useState("");
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
+  const [eventsDropdownOpen, setEventsDropdownOpen] = useState(false);
+  const [mobileEventsOpen, setMobileEventsOpen] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState(() => {
     const countryFromPath = getCountryCodeFromPathname(pathname);
-    if (countryFromPath) {
-      return countryFromPath;
-    }
+    return countryFromPath || DEFAULT_COUNTRY_CODE;
+  });
+  const selectedCountry = getCountryByCode(selectedCountryCode, countries);
 
-    if (typeof document === "undefined") {
-      return DEFAULT_COUNTRY_CODE;
-    }
+  useEffect(() => {
+    const countryFromPath = getCountryCodeFromPathname(pathname);
+    if (countryFromPath) return;
 
     const matchedCookie = document.cookie
       .split("; ")
       .find((entry) => entry.startsWith(`${COUNTRY_COOKIE_KEY}=`))
       ?.split("=")[1];
 
-    return normalizeCountryCode(decodeURIComponent(matchedCookie || DEFAULT_COUNTRY_CODE));
-  });
-  const selectedCountry = getCountryByCode(selectedCountryCode, countries);
+    if (matchedCookie) {
+      setSelectedCountryCode(normalizeCountryCode(decodeURIComponent(matchedCookie)));
+    }
+  }, [pathname]);
 
   useEffect(() => {
     let cancelled = false;
@@ -278,6 +283,8 @@ export default function Navbar() {
         setMobileDealsOpen(false);
         setMobileActiveCategorySlug("");
         setDesktopSearchOpen(false);
+        setEventsDropdownOpen(false);
+        setMobileEventsOpen(false);
       }
     }
 
@@ -434,13 +441,7 @@ export default function Navbar() {
   }));
 
   const showMegaMenu = megaOpen && displayCategories.length > 0;
-  const navItems = [
-    ...PRIMARY_NAV,
-    ...events.map((event) => ({
-      label: event.name,
-      href: `/events/${event.slug}`,
-    })),
-  ];
+  const navItems = PRIMARY_NAV;
   return (
     <header className="sticky top-0 z-50 border-b border-white/8 bg-[rgba(0,0,0,0.96)]">
       <div
@@ -540,7 +541,7 @@ export default function Navbar() {
                           </div>
 
                           <Link
-                            href={buildCountryPath("/stores", selectedCountryCode)}
+                            href={buildCountryPath("/categories", selectedCountryCode)}
                             onMouseEnter={() => {
                               setActiveStoreSlug("");
                               setAllCategoriesMode(true);
@@ -728,6 +729,57 @@ export default function Navbar() {
                 );
               }
 
+              if (item.kind === "events") {
+                const isActive = pathWithoutCountry.startsWith("/events");
+                return (
+                  <div
+                    key={item.label}
+                    className="relative"
+                    onMouseEnter={() => setEventsDropdownOpen(true)}
+                    onMouseLeave={() => setEventsDropdownOpen(false)}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setEventsDropdownOpen((current) => !current)}
+                      className={cn(
+                        "flex items-center gap-1.5 text-[0.88rem] font-semibold transition",
+                        isActive || eventsDropdownOpen ? "text-white" : "text-white/80 hover:text-white"
+                      )}
+                      aria-expanded={eventsDropdownOpen}
+                      aria-haspopup="true"
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDownIcon className={cn("h-4 w-4 transition-transform", eventsDropdownOpen ? "rotate-180" : "rotate-0")} />
+                    </button>
+
+                    {eventsDropdownOpen && events.length > 0 ? (
+                      <div className="absolute left-0 top-full pt-3">
+                        <div className="absolute inset-x-0 -top-3 h-3" />
+                        <div className="w-[200px] overflow-hidden rounded-[16px] border border-white/10 bg-black p-2 shadow-[0_16px_50px_rgba(0,0,0,0.6)]">
+                          <div className="grid gap-1">
+                            {events.map((event) => (
+                              <Link
+                                key={event.slug}
+                                href={buildCountryPath(`/events/${event.slug}`, selectedCountryCode)}
+                                onClick={() => setEventsDropdownOpen(false)}
+                                className={cn(
+                                  "block rounded-[10px] px-3.5 py-2 text-[0.85rem] font-semibold transition",
+                                  pathWithoutCountry === `/events/${event.slug}`
+                                    ? "bg-white/8 text-[var(--accent)]"
+                                    : "text-white/70 hover:bg-white/5 hover:text-white"
+                                )}
+                              >
+                                {event.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={item.label}
@@ -875,6 +927,17 @@ export default function Navbar() {
 
             {mobileDealsOpen ? (
               <div className="mt-4 grid gap-1">
+                <Link
+                  href={buildCountryPath("/categories", selectedCountryCode)}
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobileDealsOpen(false);
+                  }}
+                  className="flex w-full items-center justify-between py-4 text-left border-b border-white/6 text-[0.98rem] font-bold text-[var(--accent)]"
+                >
+                  <span>All Categories</span>
+                  <ChevronRightIcon className="h-4 w-4" />
+                </Link>
                 {displayCategories.map((category) => {
                   const mobileCategoryStores = storesByCategory[category.slug] || [];
                   const isMobileActive = mobileActiveCategorySlug === category.slug;
@@ -936,22 +999,53 @@ export default function Navbar() {
           </div>
 
           <div className="border-b border-white/8 py-5">
+            <button
+              type="button"
+              onClick={() => setMobileEventsOpen((current) => !current)}
+              className="flex w-full items-center justify-between text-left text-[1.05rem] font-semibold text-white"
+            >
+              <span>Events</span>
+              <ChevronDownIcon className={cn("h-4 w-4 transition-transform", mobileEventsOpen ? "rotate-180" : "rotate-0")} />
+            </button>
+
+            {mobileEventsOpen ? (
+              <div className="mt-4 grid gap-1">
+                {events.length ? (
+                  events.map((event) => (
+                    <Link
+                      key={event.slug}
+                      href={buildCountryPath(`/events/${event.slug}`, selectedCountryCode)}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setMobileEventsOpen(false);
+                      }}
+                      className="block py-3 text-[0.98rem] font-semibold text-white/80 hover:text-white"
+                    >
+                      {event.name}
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-sm text-white/45">No events available yet.</p>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="border-b border-white/8 py-5">
             <Link href={buildCountryPath("/exclusive", selectedCountryCode)} onClick={() => setMobileOpen(false)} className="block text-[1.05rem] font-semibold text-white">
               Exclusive
             </Link>
           </div>
 
-          {events.map((event) => (
-            <div key={event.slug} className="border-b border-white/8 py-5">
-              <Link
-                href={buildCountryPath(`/events/${event.slug}`, selectedCountryCode)}
-                onClick={() => setMobileOpen(false)}
-                className="block text-[1.05rem] font-semibold text-white"
-              >
-                {event.name}
-              </Link>
-            </div>
-          ))}
+          <div className="border-b border-white/8 py-5">
+            <Link
+              href={buildCountryPath("/blog", selectedCountryCode)}
+              onClick={() => setMobileOpen(false)}
+              className="block text-[1.05rem] font-semibold text-white"
+            >
+              Blog
+            </Link>
+          </div>
         </div>
       </div>
     </header>

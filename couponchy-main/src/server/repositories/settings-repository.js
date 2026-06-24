@@ -92,6 +92,14 @@ export const defaultSettings = {
           accent: "linear-gradient(140deg, rgba(255,80,174,0.22), transparent 48%)",
         },
       ],
+      middleBanner: {
+        imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80",
+        targetUrl: "/coupons",
+      },
+      bottomBanner: {
+        imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80",
+        targetUrl: "/coupons",
+      },
     },
     sections: {
       trendingStores: { title: "Trending Stores", selectedStoreSlugs: [], limit: 5 },
@@ -120,6 +128,14 @@ function mergeSettings(saved) {
       hero: {
         ...defaultSettings.homepage.hero,
         ...saved.homepage?.hero,
+        middleBanner: {
+          ...defaultSettings.homepage.hero.middleBanner,
+          ...saved.homepage?.hero?.middleBanner,
+        },
+        bottomBanner: {
+          ...defaultSettings.homepage.hero.bottomBanner,
+          ...saved.homepage?.hero?.bottomBanner,
+        },
         slides: saved.homepage?.hero?.slides?.length ? saved.homepage.hero.slides : defaultSettings.homepage.hero.slides,
       },
       sections: {

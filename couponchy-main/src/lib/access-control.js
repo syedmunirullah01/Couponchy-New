@@ -9,6 +9,7 @@ export const PERMISSIONS = [
   { key: "categories", label: "Categories", href: "/admin/categories" },
   { key: "settings", label: "Settings", href: "/admin/settings" },
   { key: "scraper", label: "AI Scraper", href: "/admin/scraper" },
+  { key: "blogs", label: "Blog Posts", href: "/admin/blogs" },
 ];
 
 export const ROLE_LABELS = {
@@ -19,8 +20,8 @@ export const ROLE_LABELS = {
 
 export const ROLE_PERMISSIONS = {
   admin: PERMISSIONS.map((item) => item.key),
-  editor: ["dashboard", "homepage", "stores", "products", "offers", "hero", "events", "categories"],
-  "social-media": ["dashboard", "offers"],
+  editor: ["dashboard", "homepage", "stores", "products", "offers", "hero", "events", "categories", "blogs"],
+  "social-media": ["dashboard", "offers", "blogs"],
 };
 
 export function normalizePermissions(permissions = []) {
@@ -51,5 +52,6 @@ export function getPermissionForPath(pathname) {
   if (pathname.startsWith("/admin/offers")) return "offers";
   if (pathname.startsWith("/admin/stores")) return "stores";
   if (pathname.startsWith("/admin/scraper")) return "scraper";
+  if (pathname.startsWith("/admin/blogs")) return "blogs";
   return "dashboard";
 }
