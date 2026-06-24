@@ -22,6 +22,8 @@ const initialForm = {
   status: "Active",
   code: "",
   sourceUrl: "",
+  isExclusive: false,
+  isFeatured: false,
 };
 
 function RefreshIcon() {
@@ -120,6 +122,8 @@ export default function AdminOffersManager() {
       status: offer.status,
       code: offer.code || "",
       sourceUrl: offer.sourceUrl || "",
+      isExclusive: offer.isExclusive || false,
+      isFeatured: offer.isFeatured || false,
     });
     affiliateEditedRef.current = Boolean(offer.affiliateLink);
     setError("");
@@ -127,8 +131,10 @@ export default function AdminOffersManager() {
   }
 
   function handleChange(event) {
-    const { name, value } = event.target;
-    const nextState = { ...form, [name]: value };
+    const { name, value, type, checked } = event.target;
+    const val = type === "checkbox" ? checked : value;
+    console.log("handleChange:", name, "type:", type, "val:", val);
+    const nextState = { ...form, [name]: val };
 
     if (name === "storeSlug") {
       const matchedStore = stores.find((store) => store.slug === value);
@@ -149,6 +155,8 @@ export default function AdminOffersManager() {
     event.preventDefault();
     setIsSubmitting(true);
     setError("");
+
+    console.log("handleSubmit payload:", form);
 
     const endpoint = editingOffer ? `/api/offers/${editingOffer.id}` : "/api/offers";
     const method = editingOffer ? "PUT" : "POST";
@@ -417,6 +425,28 @@ export default function AdminOffersManager() {
               {form.type === "Deal" ? "Deal Code Optional" : "Coupon Code"}
               <Input name="code" value={form.code} onChange={handleChange} placeholder={form.type === "Deal" ? "Optional for direct deals" : "SAVE20"} />
             </label>
+            <div className="flex gap-6 md:col-span-2 mt-1">
+              <label className="flex items-center gap-2.5 text-sm text-white select-none cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="isExclusive"
+                  checked={form.isExclusive}
+                  onChange={handleChange}
+                  className="h-4.5 w-4.5 rounded border border-[var(--border)] bg-[var(--surface-soft)] accent-[var(--color-primary)] cursor-pointer"
+                />
+                Exclusive Offer Tag
+              </label>
+              <label className="flex items-center gap-2.5 text-sm text-white select-none cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="isFeatured"
+                  checked={form.isFeatured}
+                  onChange={handleChange}
+                  className="h-4.5 w-4.5 rounded border border-[var(--border)] bg-[var(--surface-soft)] accent-[var(--color-primary)] cursor-pointer"
+                />
+                Featured Offer Tag
+              </label>
+            </div>
             {error ? <p className="text-sm text-[var(--muted)] md:col-span-2">{error}</p> : null}
             <div className="flex gap-3 md:col-span-2 md:justify-end">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>

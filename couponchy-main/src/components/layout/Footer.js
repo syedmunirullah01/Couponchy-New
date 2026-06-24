@@ -212,7 +212,7 @@ export default async function Footer() {
         {/* ── Big Site Name Watermark ── */}
         <div className="relative mb-20 mt-16 flex flex-col items-center text-center">
           <h2
-            className="select-none text-[13vw] font-black leading-none tracking-tighter"
+            className="select-none text-[13vw] font-black leading-none tracking-tighter notranslate"
             style={{ color: "rgba(255,255,255,0.03)" }}
           >
             {toTitleCase(settings.siteName)}
@@ -292,7 +292,7 @@ export default async function Footer() {
                   <span
                     className="h-1.5 w-1.5 rounded-full transition-all duration-200 group-hover:scale-150 bg-[var(--accent)] opacity-60"
                   />
-                  <span className="transition-colors duration-200 group-hover:text-white">
+                  <span className="transition-colors duration-200 group-hover:text-white notranslate">
                     {link.name}
                   </span>
                 </Link>
@@ -343,7 +343,6 @@ export default async function Footer() {
                   <input
                     type="email"
                     placeholder="Your Email Address"
-                    className="h-13 w-full rounded-2xl border px-5 text-sm text-white outline-none transition-all placeholder:text-white/20"
                     className="h-13 w-full rounded-2xl border px-5 text-sm text-white outline-none transition-all placeholder:text-white/20 border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)]"
                   />
                 </div>
@@ -375,7 +374,7 @@ export default async function Footer() {
           </div>
 
           <p className="text-[12px] font-medium" style={{ color: "rgba(255,255,255,0.25)" }}>
-            © {new Date().getFullYear()} {toTitleCase(settings.siteName)}. All Rights Reserved.
+            © {new Date().getFullYear()} <span className="notranslate">{toTitleCase(settings.siteName)}</span>. All Rights Reserved.
           </p>
 
           <p className="text-[12px] font-medium" style={{ color: "rgba(255,255,255,0.25)" }}>

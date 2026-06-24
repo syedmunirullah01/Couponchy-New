@@ -96,7 +96,7 @@ function StoreCard({ store }) {
         {/* Store name */}
         <div>
           <p
-            className="text-[15px] font-black tracking-tight transition-colors duration-300 group-hover:text-[var(--accent)]"
+            className="text-[15px] font-black tracking-tight transition-colors duration-300 group-hover:text-[var(--accent)] notranslate"
             style={{ color: "rgba(255,255,255,0.92)" }}
           >
             {store.name}

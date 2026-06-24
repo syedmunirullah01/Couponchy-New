@@ -1,4 +1,5 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { headers } from "next/headers";
 import { Providers } from "./Providers";
 import "./globals.css";
 import AppToaster from "@/components/ui/Toaster";
@@ -24,9 +25,19 @@ function CustomMarkup({ markup }) {
 
 export default async function RootLayout({ children }) {
   const settings = await getSettings();
+  const requestHeaders = await headers();
+  const countryHeader = requestHeaders.get("x-country-code") || "US";
+  
+  const COUNTRY_TO_LANG = {
+    US: "en", GB: "en", CA: "en", AU: "en",
+    DE: "de", NL: "nl", SA: "ar", AE: "ar",
+    IN: "hi", ES: "es", FR: "fr", IT: "it", PT: "pt"
+  };
+  const targetLang = COUNTRY_TO_LANG[countryHeader] || "en";
+  const isTranslating = targetLang !== "en";
 
   return (
-    <html lang="en">
+    <html lang="en" className={isTranslating ? "translating" : ""}>
       <head>
         <CustomMarkup markup={settings.general.customHeadScript} />
       </head>

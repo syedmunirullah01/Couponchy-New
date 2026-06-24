@@ -7,6 +7,13 @@ import { requirePermission } from "@/server/auth";
  * Body: { jobType: "discover" | "validate", storeSlugs?: string[] }
  */
 export async function POST(request) {
+  if (process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED !== "true") {
+    return NextResponse.json(
+      { error: "AI features are currently disabled via configuration toggle." },
+      { status: 503 }
+    );
+  }
+
   const access = await requirePermission("scraper");
   if (access.error) return access.error;
 

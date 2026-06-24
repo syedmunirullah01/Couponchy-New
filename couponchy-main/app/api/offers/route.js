@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { createOffer, getAllOffers } from "@/server/repositories/offers-repository";
 import { getAllStores, getStoreBySlug, syncStoreOfferCount } from "@/server/repositories/stores-repository";

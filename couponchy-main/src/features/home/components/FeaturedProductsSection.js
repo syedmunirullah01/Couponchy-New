@@ -139,7 +139,7 @@ export default function FeaturedProductsSection({ featuredProducts, title = "Fea
                 <div className="relative flex flex-col justify-between gap-5 p-6 sm:p-7 z-20">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <p className="text-[9px] font-black uppercase tracking-[0.22em] text-white/30">{toTitleCase(product.storeName)}</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.22em] text-white/30 notranslate">{toTitleCase(product.storeName)}</p>
                       <h3 className="text-xl font-black tracking-tight text-white transition-colors duration-300 group-hover:text-[var(--accent)]">{toTitleCase(product.title)}</h3>
                       <p className="line-clamp-3 text-xs leading-relaxed text-white/50">{product.description || "Featured product curated from the store catalog."}</p>
                     </div>

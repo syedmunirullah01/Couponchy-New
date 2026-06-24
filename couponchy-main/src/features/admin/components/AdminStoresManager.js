@@ -980,7 +980,7 @@ export default function AdminStoresManager() {
                 </div>
               </section>
 
-              <div className="sticky bottom-0 flex flex-col gap-3 border-t border-[var(--border)] bg-[var(--surface)] pt-5 sm:flex-row sm:justify-end">
+              <div className="mt-6 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" className="rounded-lg" onClick={closeModal} disabled={isSubmitting}>
                   Cancel
                 </Button>

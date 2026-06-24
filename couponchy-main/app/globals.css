@@ -141,3 +141,108 @@ input {
 .featured-coupon-card {
   animation: cardReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* Modal Popup Animations */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-modalFadeIn {
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+.animate-modalScaleIn {
+  animation: modalScaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Google Translate styling overrides to keep UI clean and hidden */
+.skiptranslate,
+[class*="skiptranslate"],
+iframe.skiptranslate,
+iframe[class*="skiptranslate"],
+iframe[id*="translate"],
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+iframe[class*="goog-te-banner-frame"],
+#goog-gt-tt,
+[id*="goog-gt-tt"],
+iframe[id*="goog-gt-tt"],
+.goog-te-balloon-frame,
+[class*="goog-te-balloon"],
+.goog-te-menu-frame,
+iframe.goog-te-menu-frame,
+iframe[class*="goog-te-menu-frame"],
+.goog-te-menu,
+.goog-te-menu2,
+.goog-te-spinner-pos,
+.goog-te-spinner,
+.goog-te-spinner-animation,
+#google-translate-spinner,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-ORHb-OEVmcd-gnrPge,
+.VIpgJd-ZVi9od-a9y45x-aSRoOb,
+.VIpgJd-ZVi9od-a9y45x-aSRoOb-OEVmcd,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd,
+.goog-te-gadget,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple,
+.goog-logo-link,
+.goog-logo-link img,
+.goog-te-gadget img,
+img[src*="google_white"],
+img[src*="logo_medium"],
+img[src*="translate"],
+#google_translate_element,
+#google_translate_element * {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0px !important;
+  width: 0px !important;
+  pointer-events: none !important;
+}
+body {
+  top: 0px !important;
+  margin-top: 0px !important;
+}
+
+/* Prevent Google Translate hover highlight and styles on translated words */
+font,
+.goog-text-highlight,
+.goog-text-highlight:hover,
+font[style*="background"],
+font[style*="background-color"],
+font:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Hide the Google Translate tooltip/popup completely */
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-tooltip *,
+#goog-gt-tt,
+#goog-gt-tt:hover,
+.goog-te-balloon-frame,
+.goog-te-balloon-frame:hover {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide body content until page is translated to prevent flash of English */
+html.translating body {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+html.translated-ltr body,
+html.translated-rtl body {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity 0.15s ease-in;
+}

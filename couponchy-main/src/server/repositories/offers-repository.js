@@ -26,6 +26,8 @@ function serializeOffer(row) {
     scrapedAt:        row.scraped_at || null,
     sourceUrl:        row.source_url || "",
     isSitewide:       row.is_sitewide || false,
+    isExclusive:      row.is_exclusive || false,
+    isFeatured:       row.is_featured || false,
     // Community feedback fields
     successCount:     row.success_count || 0,
     failureCount:     row.failure_count || 0,
@@ -57,6 +59,8 @@ function buildInsertPayload(input) {
     affiliate_link:    input.affiliateLink?.trim() || "",
     cta_label:         input.ctaLabel?.trim() || (type === "Deal" ? "Get Deal" : "Get Code"),
     is_sitewide:       input.isSitewide || false,
+    is_exclusive:      input.isExclusive || false,
+    is_featured:       input.isFeatured || false,
     source_url:        input.sourceUrl?.trim() || "",
     updated_at:        new Date().toISOString(),
   };

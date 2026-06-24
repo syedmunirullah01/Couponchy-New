@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS offers (
   last_verified_at  TIMESTAMPTZ,
   store_verified    BOOLEAN DEFAULT false,
   checkout_verified BOOLEAN DEFAULT false,
+  is_exclusive      BOOLEAN DEFAULT false,
+  is_featured       BOOLEAN DEFAULT false,
   created_at        TIMESTAMPTZ DEFAULT now(),
   updated_at        TIMESTAMPTZ DEFAULT now()
 );

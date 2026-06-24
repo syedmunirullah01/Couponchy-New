@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { deleteOffer, getAllOffers, getOfferById, updateOffer } from "@/server/repositories/offers-repository";
 import { getStoreBySlug, syncStoreOfferCount } from "@/server/repositories/stores-repository";
@@ -25,6 +27,7 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const existingOffer = await getOfferById(id);
     const payload = await request.json();
+    console.log("PUT payload received in API route:", payload);
     const validationError = validateOfferPayload(payload);
 
     if (validationError) {

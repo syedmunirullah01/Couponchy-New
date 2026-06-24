@@ -6,7 +6,7 @@ export default function Logo({ noLink = false, className = "" }) {
       <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--color-primary)] text-[15px] font-black text-black shadow-[0_18px_40px_rgba(163,230,53,0.18)]">
         C
       </span>
-      <span className="text-[15px] font-extrabold tracking-tight text-white">
+      <span className="notranslate text-[15px] font-extrabold tracking-tight text-white">
         Coupon<span className="text-[var(--color-primary)]">chy</span>
       </span>
     </>

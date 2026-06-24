@@ -17,14 +17,14 @@ export default function StoreCard({ store }) {
       ) : (
         <div
           className={cn(
-            "mx-auto flex h-24 w-24 items-center justify-center rounded-full text-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)]",
+            "mx-auto flex h-24 w-24 items-center justify-center rounded-full text-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)] notranslate",
             store.logoClassName
           )}
         >
           <span>{store.logoText}</span>
         </div>
       )}
-      <h3 className="mt-6 text-[18px] font-bold tracking-tight text-white transition group-hover:text-[var(--accent)]">
+      <h3 className="mt-6 text-[18px] font-bold tracking-tight text-white transition group-hover:text-[var(--accent)] notranslate">
         {store.name}
       </h3>
       <p className="mt-1 text-[13px] font-bold text-[var(--accent)]">{store.count}</p>

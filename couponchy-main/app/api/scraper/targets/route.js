@@ -36,6 +36,13 @@ export function determineTargetUrl(store) {
  * including both official merchant pages and all multi-source aggregator URLs.
  */
 export async function GET(request) {
+  if (process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED !== "true") {
+    return NextResponse.json(
+      { error: "AI features are currently disabled via configuration toggle." },
+      { status: 503 }
+    );
+  }
+
   const access = await requirePermission("scraper");
   if (access.error) return access.error;
 
@@ -96,6 +103,13 @@ export async function GET(request) {
  * Deprecated. Scraper targets are now automatically synced from stores table.
  */
 export async function POST(request) {
+  if (process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED !== "true") {
+    return NextResponse.json(
+      { error: "AI features are currently disabled via configuration toggle." },
+      { status: 503 }
+    );
+  }
+
   const access = await requirePermission("scraper");
   if (access.error) return access.error;
 

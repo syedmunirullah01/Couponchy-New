@@ -1,3 +1,5 @@
+const IS_AI_ENABLED = process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED === "true";
+
 export const PERMISSIONS = [
   { key: "dashboard", label: "Dashboard", href: "/admin" },
   { key: "homepage", label: "Homepage", href: "/admin/homepage" },
@@ -8,7 +10,7 @@ export const PERMISSIONS = [
   { key: "events", label: "Events", href: "/admin/events" },
   { key: "categories", label: "Categories", href: "/admin/categories" },
   { key: "settings", label: "Settings", href: "/admin/settings" },
-  { key: "scraper", label: "AI Scraper", href: "/admin/scraper" },
+  ...(IS_AI_ENABLED ? [{ key: "scraper", label: "AI Scraper", href: "/admin/scraper" }] : []),
   { key: "blogs", label: "Blog Posts", href: "/admin/blogs" },
 ];
 
@@ -39,6 +41,9 @@ export function getPermissionsForRole(role, permissions) {
 }
 
 export function canAccessPermission(permissions, permission) {
+  if (permission === "scraper" && process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED !== "true") {
+    return false;
+  }
   return permission === "dashboard" || permissions.includes(permission);
 }
 

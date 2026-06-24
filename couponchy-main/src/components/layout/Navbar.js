@@ -73,7 +73,7 @@ function MenuIcon({ className = "h-5 w-5" }) {
 function BrandMark() {
   return (
     <Link href="/" className="inline-flex items-center rounded-[18px] bg-[var(--accent)] px-4 py-2.5 shadow-[0_18px_40px_rgba(163,230,53,0.16)]">
-      <span className="text-[1.8rem] font-black italic leading-none tracking-[-0.06em] text-black sm:text-[2rem]">Couponchy</span>
+      <span className="notranslate text-[1.8rem] font-black italic leading-none tracking-[-0.06em] text-black sm:text-[2rem]">Couponchy</span>
     </Link>
   );
 }
@@ -262,10 +262,44 @@ export default function Navbar() {
     const normalizedCountryCode = normalizeCountryCode(nextCountryCode);
     setSelectedCountryCode(normalizedCountryCode);
     document.cookie = `${COUNTRY_COOKIE_KEY}=${encodeURIComponent(normalizedCountryCode)}; path=/; max-age=31536000; samesite=lax`;
+
+    const COUNTRY_TO_LANG = {
+      US: "en",
+      GB: "en",
+      CA: "en",
+      AU: "en",
+      DE: "de",
+      NL: "nl",
+      SA: "ar",
+      AE: "ar",
+      IN: "hi",
+      ES: "es",
+      FR: "fr",
+      IT: "it",
+      PT: "pt",
+    };
+    const targetLang = COUNTRY_TO_LANG[normalizedCountryCode] || "en";
+
+    const expectedValue = targetLang === "en" ? "/en/en" : `/en/${targetLang}`;
+    
+    // Clear all potential duplicate cookie levels
+    const domains = [
+      "",
+      window.location.hostname,
+      "." + window.location.hostname,
+      window.location.hostname.replace(/^www\./, "")
+    ];
+    domains.forEach((dom) => {
+      const domAttr = dom ? `; domain=${dom}` : "";
+      document.cookie = `googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT${domAttr}`;
+    });
+
+    // Write single clean cookie
+    document.cookie = `googtrans=${expectedValue}; path=/; max-age=31536000; samesite=lax`;
+
     const nextPath = buildCountryPath(pathname, normalizedCountryCode);
     const search = typeof window !== "undefined" ? window.location.search : "";
-    router.replace(`${nextPath}${search}`);
-    router.refresh();
+    window.location.href = `${nextPath}${search}`;
   }
 
   useEffect(() => {
@@ -452,7 +486,7 @@ export default function Navbar() {
       >
         <div className="flex items-center gap-4 lg:gap-6">
           <Link href={buildCountryPath("/", selectedCountryCode)} className="inline-flex items-center rounded-[10px] bg-[var(--accent)] px-3.5 py-1.5 shadow-[0_14px_32px_rgba(163,230,53,0.12)]">
-            <span className="text-[1.4rem] font-black italic leading-none tracking-[-0.07em] text-black">Couponchy</span>
+            <span className="notranslate text-[1.4rem] font-black italic leading-none tracking-[-0.07em] text-black">Couponchy</span>
           </Link>
 
           <nav className="hidden items-center gap-6 lg:flex" ref={menuRef}>
@@ -582,7 +616,7 @@ export default function Navbar() {
                                     : "text-white/70 hover:bg-white/5 hover:text-white"
                                 )}
                               >
-                                <span className="truncate pr-3 text-[0.88rem]">
+                                <span className="truncate pr-3 text-[0.88rem] notranslate">
                                   {store.name || POPULAR_STORE_NAMES[index] || "Store"}
                                 </span>
                                 <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-white/40" />
@@ -632,22 +666,26 @@ export default function Navbar() {
                                           unoptimized
                                         />
                                       ) : (
-                                        <span className="px-2 text-center text-[11px] font-black uppercase tracking-[0.18em]">
+                                        <span className="px-2 text-center text-[11px] font-black uppercase tracking-[0.18em] notranslate">
                                           {(store?.name || offer.storeName || "OF").slice(0, 2)}
                                         </span>
                                       )}
                                     </div>
                                     <div className="text-right">
-                                      <p className="text-[1.5rem] font-black leading-none text-white">
+                                      <p className={`notranslate ${formatOfferValue(offer).length <= 4 ? "text-[1.5rem]" : "text-[1.1rem]"} font-black leading-none text-white`}>
                                         {formatOfferValue(offer)}
                                       </p>
                                     </div>
                                   </div>
 
                                   <div className="mt-4">
-                                    <h3 className="line-clamp-1 text-[1rem] font-semibold text-white">{store?.name || offer.storeName}</h3>
+                                    <h3 className="line-clamp-1 text-[1rem] font-semibold text-white notranslate">{store?.name || offer.storeName}</h3>
                                     <p className="mt-2 min-h-[2.5rem] line-clamp-2 text-[0.92rem] leading-5 text-white">
-                                      {offer.title || offer.description || `Browse current savings from ${store?.name || offer.storeName}.`}
+                                      {offer.title || offer.description || (
+                                        <>
+                                          Browse current savings from <span className="notranslate">{store?.name || offer.storeName} </span>.
+                                        </>
+                                      )}
                                     </p>
                                   </div>
 
@@ -682,7 +720,7 @@ export default function Navbar() {
                                           unoptimized
                                         />
                                       ) : (
-                                        <span className="px-2 text-center text-[11px] font-black uppercase tracking-[0.18em]">
+                                        <span className="px-2 text-center text-[11px] font-black uppercase tracking-[0.18em] notranslate">
                                           {store.name.slice(0, 2)}
                                         </span>
                                       )}
@@ -695,9 +733,13 @@ export default function Navbar() {
                                   </div>
 
                                   <div className="mt-2.5">
-                                    <h3 className="line-clamp-1 text-[0.96rem] font-semibold text-white">{store.name}</h3>
+                                    <h3 className="line-clamp-1 text-[0.96rem] font-semibold text-white notranslate">{store.name}</h3>
                                     <p className="mt-1 min-h-[2.25rem] line-clamp-2 text-[11px] leading-4.5 text-white/68">
-                                      {store.description || `Browse current savings, coupon codes, and direct offers from ${store.name}.`}
+                                      {store.description || (
+                                        <>
+                                          Browse current savings, coupon codes, and direct offers from <span className="notranslate">{store.name} </span>.
+                                        </>
+                                      )}
                                     </p>
                                   </div>
 
@@ -708,7 +750,7 @@ export default function Navbar() {
 
                                   <div className="mt-auto pt-3">
                                     <div className="inline-flex rounded-[12px] bg-white/10 px-3.5 py-1.5 text-[11px] font-semibold text-white/88 transition group-hover:bg-[var(--accent)] group-hover:text-black">
-                                      Explore {store.name}
+                                      Explore <span className="notranslate">{store.name} </span>
                                     </div>
                                   </div>
                                 </Link>
@@ -867,7 +909,7 @@ export default function Navbar() {
           <div className="border-b border-white/8 pb-4">
             <div className="flex items-center justify-between gap-4">
             <Link href={buildCountryPath("/", selectedCountryCode)} onClick={() => setMobileOpen(false)} className="inline-flex items-center rounded-[10px] bg-[var(--accent)] px-3 py-1.5">
-              <span className="text-[1.35rem] font-black italic leading-none tracking-[-0.07em] text-black">Couponchy</span>
+              <span className="notranslate text-[1.35rem] font-black italic leading-none tracking-[-0.07em] text-black">Couponchy</span>
             </Link>
             <div className="flex items-center gap-3 text-white">
               <button type="button" onClick={() => setDesktopSearchOpen((current) => !current)} className="inline-flex h-10 w-10 items-center justify-center">
@@ -880,15 +922,15 @@ export default function Navbar() {
             </div>
 
             <div className="mt-4">
-              <label className="flex items-center justify-between gap-4 rounded-[14px] border border-white/10 bg-white/[0.025] px-4 py-3 text-sm text-white/88">
-                <span className="min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[14px] border border-white/10 bg-white/[0.025] px-4 py-3 text-sm text-white/88">
+                <div className="min-w-0">
                   <span className="block text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-white/45">Country</span>
                   <span className="mt-1 block truncate text-[0.98rem] font-semibold text-white">{selectedCountry.name}</span>
-                </span>
+                </div>
                 <select
                   value={selectedCountryCode}
                   onChange={(event) => handleCountryChange(event.target.value)}
-                  className="h-10 max-w-[160px] min-w-0 rounded-full border border-white/12 bg-black/95 px-3 text-sm font-semibold text-white outline-none focus:border-[var(--color-primary)]"
+                  className="h-10 w-full sm:w-auto sm:max-w-[200px] min-w-0 rounded-full border border-white/12 bg-black/95 px-3 text-sm font-semibold text-white outline-none focus:border-[var(--color-primary)]"
                   aria-label="Select country"
                 >
                   {countries.map((country) => (
@@ -897,7 +939,7 @@ export default function Navbar() {
                     </option>
                   ))}
                 </select>
-              </label>
+              </div>
             </div>
           </div>
 
@@ -971,7 +1013,7 @@ export default function Navbar() {
                                   }}
                                   className="text-[0.96rem] text-white/88"
                                 >
-                                  {store.name}
+                                  <span className="notranslate">{store.name}</span>
                                 </Link>
                               ))
                             ) : (

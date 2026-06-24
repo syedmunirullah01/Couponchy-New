@@ -175,7 +175,7 @@ export default function FeaturedCouponCard({ coupon, index = 0 }) {
                 isHighlight ? "text-black/60 hover:text-black" : "text-white/60 hover:text-[var(--accent)]"
               )}
             >
-              At {toTitleCase(coupon.brand)}
+              At <span className="notranslate">{toTitleCase(coupon.brand)}</span>
             </p>
           </Link>
         </div>

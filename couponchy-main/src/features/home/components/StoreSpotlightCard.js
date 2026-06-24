@@ -106,7 +106,7 @@ export default function StoreSpotlightCard({ store, index = 0 }) {
             </div>
           ) : (
             <div 
-              className="relative flex h-20 w-20 items-center justify-center rounded-[26px] border text-xl font-black transition-all duration-500 group-hover:scale-105"
+              className="relative flex h-20 w-20 items-center justify-center rounded-[26px] border text-xl font-black transition-all duration-500 group-hover:scale-105 notranslate"
               style={{
                 background: `linear-gradient(135deg, rgba(163, 230, 53, 0.15), rgba(10, 10, 10, 0.8))`,
                 borderColor: "rgba(163, 230, 53, 0.2)",
@@ -122,7 +122,7 @@ export default function StoreSpotlightCard({ store, index = 0 }) {
         {/* Content Section */}
         <div className="flex flex-1 flex-col justify-between w-full">
           <div>
-            <h3 className="text-lg font-black italic tracking-tight text-white transition-colors duration-300 group-hover:text-[var(--accent)]">
+            <h3 className="text-lg font-black italic tracking-tight text-white transition-colors duration-300 group-hover:text-[var(--accent)] notranslate">
               {toTitleCase(store.name)}
             </h3>
             

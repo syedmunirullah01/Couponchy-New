@@ -190,9 +190,9 @@ export default async function EventPage({ params }) {
                   >
                     <CardContent className="p-0">
                       <div className="grid items-stretch lg:grid-cols-[160px_minmax(0,1fr)_220px]">
-                        <div className="flex flex-col justify-center border-b border-[var(--border)] bg-[rgba(255,255,255,0.02)] px-6 py-5 text-center lg:border-b-0 lg:border-r">
+                        <div className="notranslate flex flex-col justify-center border-b border-[var(--border)] bg-[rgba(255,255,255,0.02)] px-6 py-5 text-center lg:border-b-0 lg:border-r">
                           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">Discount</p>
-                          <p className="mt-2 text-[48px] font-black leading-none tracking-[-0.08em] text-[var(--text)]">{offerValue.replace(" off", "")}</p>
+                          <p className={`mt-2 ${offerValue.length <= 4 ? "text-[48px]" : "text-[24px]"} font-black leading-none tracking-[-0.08em] text-[var(--text)]`}>{offerValue.replace(" off", "")}</p>
                           <p className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
                             {offerValue.includes("%") ? "off" : offer.type}
                           </p>
@@ -216,7 +216,7 @@ export default async function EventPage({ params }) {
                             </span>
                             <span className="inline-flex items-center gap-2">
                               <span className="h-2 w-2 rounded-full bg-white/20" />
-                              {offer.storeName}
+                              <span className="notranslate">{offer.storeName}</span>
                             </span>
                           </div>
                         </div>
