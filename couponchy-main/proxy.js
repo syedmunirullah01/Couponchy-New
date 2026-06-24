@@ -87,8 +87,8 @@ function isAdminOrAuthPath(pathname) {
   return pathname.startsWith("/admin") || pathname.startsWith("/login");
 }
 
-// ── Middleware ────────────────────────────────────────────────────────────────
-export async function middleware(req) {
+// ── Proxy ────────────────────────────────────────────────────────────────────
+export async function proxy(req) {
   const { pathname, search } = req.nextUrl;
 
   // Admin auth guard
