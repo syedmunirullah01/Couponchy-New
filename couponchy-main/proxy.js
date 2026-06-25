@@ -93,7 +93,12 @@ export async function proxy(req) {
 
   // Admin auth guard
   if (pathname.startsWith("/admin")) {
-    const token = await getToken({ req });
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    console.log("TOKEN:", token);
 
     if (!token) {
       const redirectUrl = req.nextUrl.clone();
