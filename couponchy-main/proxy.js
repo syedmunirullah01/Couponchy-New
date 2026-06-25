@@ -95,6 +95,11 @@ function isAdminOrAuthPath(pathname) {
 export async function proxy(req) {
   const { pathname, search } = req.nextUrl;
 
+  // Bypass out route completely
+  if (pathname.startsWith("/out")) {
+    return NextResponse.next();
+  }
+
   // Admin auth guard
   if (pathname.startsWith("/admin")) {
     const token = await getToken({
