@@ -84,7 +84,11 @@ function isStaticAsset(pathname) {
 }
 
 function isAdminOrAuthPath(pathname) {
-  return pathname.startsWith("/admin") || pathname.startsWith("/login");
+  return (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/out")
+  );
 }
 
 // ── Proxy ────────────────────────────────────────────────────────────────────
