@@ -74,6 +74,78 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+function cleanHTMLContent(rawHtml) {
+  if (typeof window === "undefined" || !rawHtml) return "";
+  
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(rawHtml, "text/html");
+
+  function cleanNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node.textContent;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return "";
+    }
+
+    const tagName = node.tagName.toUpperCase();
+
+    // Disallowed tags
+    if (["SCRIPT", "STYLE", "META", "LINK", "HEAD", "TITLE", "SVG", "IMG"].includes(tagName)) {
+      return "";
+    }
+
+    // Recursively clean children
+    let childContent = "";
+    for (let i = 0; i < node.childNodes.length; i++) {
+      childContent += cleanNode(node.childNodes[i]);
+    }
+
+    const tag = tagName.toLowerCase();
+
+    // Standard styling & structure tags
+    if (["P", "H2", "H3", "H4", "STRONG", "B", "EM", "I", "UL", "OL", "LI", "BLOCKQUOTE", "PRE", "CODE"].includes(tagName)) {
+      const finalTag = (tag === "b" ? "strong" : tag === "i" ? "em" : tag);
+      if (finalTag === "p" && node.classList.contains("lead")) {
+        return `<p class="lead">${childContent}</p>`;
+      }
+      return `<${finalTag}>${childContent}</${finalTag}>`;
+    }
+
+    if (tagName === "A") {
+      const href = node.getAttribute("href");
+      if (href) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer">${childContent}</a>`;
+      }
+      return childContent;
+    }
+
+    if (tagName === "BR") {
+      return "<br />";
+    }
+
+    if (tagName === "H1") {
+      return `<h2>${childContent}</h2>`;
+    }
+    if (["H5", "H6"].includes(tagName)) {
+      return `<h3>${childContent}</h3>`;
+    }
+
+    // Unwrap divs, spans, tables etc.
+    return childContent;
+  }
+
+  let result = "";
+  for (let i = 0; i < doc.body.childNodes.length; i++) {
+    result += cleanNode(doc.body.childNodes[i]);
+  }
+
+  return result
+    .replace(/\r\n/g, "\n")
+    .replace(/\n\s*\n/g, "\n")
+    .trim();
+}
+
 export default function AdminBlogsManager() {
   const [blogs, setBlogs] = useState([]);
   const [isHydrating, setIsHydrating] = useState(false);
@@ -89,7 +161,80 @@ export default function AdminBlogsManager() {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
+  const [editorDragActive, setEditorDragActive] = useState(false);
+
   const { titleId, descriptionId } = useDialogA11yIds();
+
+  const handleEditorDragOver = (e) => {
+    e.preventDefault();
+    setEditorDragActive(true);
+  };
+
+  const handleEditorDragLeave = (e) => {
+    e.preventDefault();
+    setEditorDragActive(false);
+  };
+
+  const handleEditorDrop = (e) => {
+    e.preventDefault();
+    setEditorDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      if (file.name.toLowerCase().endsWith(".html") || file.type === "text/html") {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const fileContent = event.target.result;
+          const cleaned = cleanHTMLContent(fileContent);
+          insertHTMLContent(cleaned);
+          toast.success("HTML file content cleaned and inserted!");
+        };
+        reader.readAsText(file);
+      } else {
+        toast.error("Please drop a valid .html file.");
+      }
+    }
+  };
+
+  const handleEditorPaste = (e) => {
+    const html = e.clipboardData?.getData("text/html");
+    if (html && html.trim()) {
+      e.preventDefault();
+      const cleaned = cleanHTMLContent(html);
+      if (cleaned.trim()) {
+        insertHTMLContent(cleaned);
+        toast.success("Rich text parsed, cleaned, and inserted!");
+      } else {
+        const text = e.clipboardData.getData("text/plain");
+        if (text) {
+          insertHTMLContent(text);
+        }
+      }
+    }
+  };
+
+  function insertHTMLContent(html) {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      const text = watch("content") || "";
+      setValue("content", text + html, { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const replacement = html;
+
+    setValue("content", text.substring(0, start) + replacement + text.substring(end), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + replacement.length, start + replacement.length);
+    }, 50);
+  }
 
   const {
     register,
@@ -634,25 +779,49 @@ export default function AdminBlogsManager() {
                   {editorTab === "write" ? (
                     <div className="space-y-2">
                       {/* Formatter Helpers Toolbar */}
-                      <div className="flex flex-wrap gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-2">
-                        <button type="button" onClick={() => insertHTMLTag("<p class=\"lead\">", "</p>")} className="rounded px-2.5 py-1 text-[10px] font-black uppercase bg-[var(--surface)] text-[var(--color-primary)] hover:brightness-110" title="Introductory large lead text">Lead P</button>
-                        <button type="button" onClick={() => insertHTMLTag("<p>", "</p>")} className="rounded px-2.5 py-1 text-[10px] font-black uppercase bg-[var(--surface)] text-white hover:brightness-110" title="Paragraph text">Paragraph</button>
-                        <button type="button" onClick={() => insertHTMLTag("<h2>", "</h2>")} className="rounded px-2.5 py-1 text-[10px] font-black uppercase bg-[var(--surface)] text-white hover:brightness-110" title="Section title">H2 Heading</button>
-                        <button type="button" onClick={() => insertHTMLTag("<h3>", "</h3>")} className="rounded px-2.5 py-1 text-[10px] font-black uppercase bg-[var(--surface)] text-white hover:brightness-110" title="Subsection title">H3 Heading</button>
-                        <button type="button" onClick={() => insertHTMLTag("<strong>", "</strong>")} className="rounded px-2 py-1 text-[10px] font-bold bg-[var(--surface)] text-white hover:brightness-110">Bold</button>
-                        <button type="button" onClick={() => insertHTMLTag("<em>", "</em>")} className="rounded px-2 py-1 text-[10px] italic bg-[var(--surface)] text-white hover:brightness-110">Italic</button>
-                        <button type="button" onClick={() => insertHTMLTag("<blockquote>\n  \"", "\"\n</blockquote>")} className="rounded px-2.5 py-1 text-[10px] font-black bg-[var(--surface)] text-[var(--color-primary)] hover:brightness-110">Quote</button>
-                        <button type="button" onClick={() => insertHTMLTag("<div class=\"my-8 rounded-2xl border border-white/8 bg-white/[0.02] p-6\">\n  <h4 class=\"text-white font-extrabold mb-3\">Title</h4>\n  <ol class=\"space-y-2 text-white/70 pl-5 list-decimal\">\n    <li>Item 1</li>\n  </ol>\n</div>")} className="rounded px-2.5 py-1 text-[10px] font-bold bg-[var(--surface)] text-white hover:brightness-110" title="Framed alert box">Feature Box</button>
-                        <button type="button" onClick={() => insertHTMLTag("<div class=\"my-8 rounded-2xl border border-white/8 bg-[#070707] p-6 font-mono text-[13px] leading-relaxed text-white/80 overflow-x-auto\">\n  ", "\n</div>")} className="rounded px-2.5 py-1 text-[10px] font-bold bg-[var(--surface)] text-cyan-400 hover:brightness-110" title="Preformatted code block">Code Block</button>
-                        <button type="button" onClick={() => insertHTMLTag("<ul>\n  <li>", "</li>\n</ul>")} className="rounded px-2 py-1 text-[10px] font-bold bg-[var(--surface)] text-white hover:brightness-110">Bullet List</button>
+                      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-2.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Structure */}
+                          <div className="flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] p-0.5" title="Structure tag insertion">
+                            <button type="button" onClick={() => insertHTMLTag("<p class=\"lead\">", "</p>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-[var(--color-primary)] hover:bg-[var(--surface-soft)] transition" title="Introductory lead paragraph">Lead</button>
+                            <button type="button" onClick={() => insertHTMLTag("<p>", "</p>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Standard paragraph">P</button>
+                            <button type="button" onClick={() => insertHTMLTag("<h2>", "</h2>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Heading H2">H2</button>
+                            <button type="button" onClick={() => insertHTMLTag("<h3>", "</h3>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Heading H3">H3</button>
+                          </div>
+
+                          {/* Inline Styling */}
+                          <div className="flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] p-0.5" title="Emphasis">
+                            <button type="button" onClick={() => insertHTMLTag("<strong>", "</strong>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Bold text">B</button>
+                            <button type="button" onClick={() => insertHTMLTag("<em>", "</em>")} className="rounded px-2.5 py-1.5 text-xs italic font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Italic text">I</button>
+                          </div>
+
+                          {/* Block Styling */}
+                          <div className="flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] p-0.5" title="Layout Blocks">
+                            <button type="button" onClick={() => insertHTMLTag("<blockquote>\n  \"", "\"\n</blockquote>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Block Quote">Quote</button>
+                            <button type="button" onClick={() => insertHTMLTag("<div class=\"my-8 rounded-2xl border border-white/8 bg-white/[0.02] p-6\">\n  <h4 class=\"text-white font-extrabold mb-3\">Title</h4>\n  <ol class=\"space-y-2 text-white/70 pl-5 list-decimal\">\n    <li>Item 1</li>\n  </ol>\n</div>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Framed Feature Box">Box</button>
+                            <button type="button" onClick={() => insertHTMLTag("<div class=\"my-8 rounded-2xl border border-white/8 bg-[#070707] p-6 font-mono text-[13px] leading-relaxed text-white/80 overflow-x-auto\">\n  ", "\n</div>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-cyan-400 hover:bg-[var(--surface-soft)] transition" title="Code Block">Code</button>
+                            <button type="button" onClick={() => insertHTMLTag("<ul>\n  <li>", "</li>\n</ul>")} className="rounded px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--surface-soft)] transition" title="Bullet List">List</button>
+                          </div>
+                        </div>
                       </div>
 
                       <textarea
-                        ref={textareaRef}
-                        rows={14}
-                        className="w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 font-mono text-xs text-white outline-none focus:border-[var(--color-primary)]"
-                        placeholder="Write content HTML here... (use toolbar to quick-insert tags)"
                         {...register("content")}
+                        ref={(el) => {
+                          register("content").ref(el);
+                          textareaRef.current = el;
+                        }}
+                        rows={14}
+                        className={`w-full resize-y rounded-xl border px-4 py-3 font-mono text-xs text-white outline-none transition-all ${
+                          editorDragActive
+                            ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5"
+                            : "border-[var(--border)] bg-[var(--surface)] focus:border-[var(--color-primary)]"
+                        }`}
+                        placeholder="Write content HTML here... (You can also drop a .html file or paste rich text from Word/Docs directly to parse it!)"
+                        onPaste={handleEditorPaste}
+                        onDragOver={handleEditorDragOver}
+                        onDragLeave={handleEditorDragLeave}
+                        onDrop={handleEditorDrop}
                       />
                       {errors.content ? <span className="text-xs text-[var(--color-primary)]">{errors.content.message}</span> : null}
                     </div>

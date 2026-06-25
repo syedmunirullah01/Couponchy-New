@@ -4,8 +4,24 @@ import { requirePermission } from "@/server/auth";
 import { createStoresBulk, getAllStores } from "@/server/repositories/stores-repository";
 import { getAllCategories } from "@/server/repositories/categories-repository";
 import { getSettings } from "@/server/repositories/settings-repository";
-import { uploadImageBuffer } from "@/server/cloudinary";
+import { uploadImageBuffer } from "@/server/supabase-storage";
 import { normalizeCountryCode } from "@/lib/countries";
+
+function getMimeTypeFromExtension(ext) {
+  switch (ext.toLowerCase()) {
+    case ".png":
+      return "image/png";
+    case ".jpg":
+    case ".jpeg":
+      return "image/jpeg";
+    case ".webp":
+      return "image/webp";
+    case ".svg":
+      return "image/svg+xml";
+    default:
+      return "image/png";
+  }
+}
 
 function slugify(value) {
   return String(value || "")
@@ -154,8 +170,7 @@ export async function POST(request) {
           const uploadResult = await uploadImageBuffer(zipMatch, {
             folder: "couponchy/stores",
             public_id: slug,
-            overwrite: true,
-            resource_type: "image",
+            contentType: getMimeTypeFromExtension(getExtension(logoFile)),
           });
 
           logoImage = uploadResult.secure_url;

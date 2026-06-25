@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { uploadImageBuffer } from "@/server/cloudinary";
+import { uploadImageBuffer } from "@/server/supabase-storage";
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // Banners can be up to 4MB
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
@@ -27,8 +27,7 @@ export async function POST(request) {
     const uploadResult = await uploadImageBuffer(buffer, {
       folder: "couponchy/banners",
       public_id: slug,
-      overwrite: true,
-      resource_type: "image",
+      contentType: file.type,
     });
 
     return NextResponse.json({

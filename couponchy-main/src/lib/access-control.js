@@ -12,6 +12,7 @@ export const PERMISSIONS = [
   { key: "settings", label: "Settings", href: "/admin/settings" },
   ...(IS_AI_ENABLED ? [{ key: "scraper", label: "AI Scraper", href: "/admin/scraper" }] : []),
   { key: "blogs", label: "Blog Posts", href: "/admin/blogs" },
+  { key: "pages", label: "Company Pages", href: "/admin/pages" },
 ];
 
 export const ROLE_LABELS = {
@@ -22,7 +23,7 @@ export const ROLE_LABELS = {
 
 export const ROLE_PERMISSIONS = {
   admin: PERMISSIONS.map((item) => item.key),
-  editor: ["dashboard", "homepage", "stores", "products", "offers", "hero", "events", "categories", "blogs"],
+  editor: ["dashboard", "homepage", "stores", "products", "offers", "hero", "events", "categories", "blogs", "pages"],
   "social-media": ["dashboard", "offers", "blogs"],
 };
 
@@ -58,5 +59,6 @@ export function getPermissionForPath(pathname) {
   if (pathname.startsWith("/admin/stores")) return "stores";
   if (pathname.startsWith("/admin/scraper")) return "scraper";
   if (pathname.startsWith("/admin/blogs")) return "blogs";
+  if (pathname.startsWith("/admin/pages")) return "pages";
   return "dashboard";
 }

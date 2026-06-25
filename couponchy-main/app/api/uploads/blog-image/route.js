@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { uploadImageBuffer } from "@/server/cloudinary";
+import { uploadImageBuffer } from "@/server/supabase-storage";
 import { requirePermission } from "@/server/auth";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB for high-res blog covers
@@ -33,8 +33,7 @@ export async function POST(request) {
     const uploadResult = await uploadImageBuffer(buffer, {
       folder: "couponchy/blogs",
       public_id: slug,
-      overwrite: true,
-      resource_type: "image",
+      contentType: file.type,
     });
 
     return NextResponse.json({

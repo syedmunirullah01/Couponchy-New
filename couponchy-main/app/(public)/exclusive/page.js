@@ -94,7 +94,7 @@ export default async function ExclusivePage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="xl:sticky xl:top-24 xl:self-start">
+        <aside className="order-last xl:order-first xl:sticky xl:top-24 xl:self-start">
           <Card className="rounded-[28px]">
             <CardHeader className="border-b border-[var(--border)] pb-4">
               <CardTitle>Related Stores</CardTitle>
@@ -128,7 +128,7 @@ export default async function ExclusivePage() {
           </Card>
         </aside>
 
-        <div>
+        <div className="order-first xl:order-last">
           {exclusiveOffers.length ? (
             <div className="grid gap-4">
               {exclusiveOffers.map((offer) => {

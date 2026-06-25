@@ -37,11 +37,11 @@ export default async function RootLayout({ children }) {
   const isTranslating = targetLang !== "en";
 
   return (
-    <html lang="en" className={isTranslating ? "translating" : ""}>
+    <html lang="en" className={isTranslating ? "translating" : ""} suppressHydrationWarning>
       <head>
         <CustomMarkup markup={settings.general.customHeadScript} />
       </head>
-      <body className={`${plusJakartaSans.variable} antialiased`}>
+      <body className={`${plusJakartaSans.variable} antialiased`} suppressHydrationWarning>
         <CustomMarkup markup={settings.general.customBodyStartScript} />
         <Providers>
           {children}

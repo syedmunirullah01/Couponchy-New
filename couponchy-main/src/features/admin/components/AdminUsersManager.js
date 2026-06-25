@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -213,7 +213,7 @@ export default function AdminUsersManager() {
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
-                    <>
+                    <Fragment key={user.id}>
                       <TableRow key={user.id}>
                         <TableCell>
                           <div className="space-y-1">
@@ -268,7 +268,7 @@ export default function AdminUsersManager() {
                           </TableCell>
                         </TableRow>
                       ) : null}
-                    </>
+                    </Fragment>
                   ))}
                 </TableBody>
               </Table>

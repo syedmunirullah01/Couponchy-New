@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { uploadImageBuffer } from "@/server/cloudinary";
+import { uploadImageBuffer } from "@/server/supabase-storage";
 
 const MAX_LOGO_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_LOGO_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
@@ -27,8 +27,7 @@ export async function POST(request) {
     const uploadResult = await uploadImageBuffer(buffer, {
       folder: "couponchy/stores",
       public_id: slug,
-      overwrite: true,
-      resource_type: "image",
+      contentType: file.type,
     });
 
     return NextResponse.json({

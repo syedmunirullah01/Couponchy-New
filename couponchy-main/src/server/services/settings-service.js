@@ -31,3 +31,8 @@ export async function getMetadataDefaults(pageTitle, overrides = {}) {
     robots: settings.seo.robots,
   };
 }
+
+export async function getCompanyPageContent(slug) {
+  const settings = await getSettings();
+  return settings.pages?.[slug] || { title: "", content: "" };
+}

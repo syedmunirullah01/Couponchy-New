@@ -108,6 +108,13 @@ export const defaultSettings = {
       latestStores: { title: "Latest Stores", selectedStoreSlugs: [], limit: 10 },
     },
   },
+  pages: {
+    about: { title: "About Us", content: "<h2>About Us</h2><p>Welcome to Couponchy! We are dedicated to providing the best verified coupons and discount codes for your favorite online stores.</p>" },
+    contact: { title: "Contact Us", content: "<h2>Contact Us</h2><p>Have questions or feedback? Reach out to us at support@couponchy.com. We would love to hear from you!</p>" },
+    privacy: { title: "Privacy Policy", content: "<h2>Privacy Policy</h2><p>Your privacy is important to us. This policy details how we handle and protect your personal information on our platform.</p>" },
+    terms: { title: "Terms Of Service", content: "<h2>Terms Of Service</h2><p>Please read these Terms of Service carefully before accessing or using our coupon listings and automated services.</p>" },
+    sitemap: { title: "Sitemap", content: "<h2>Sitemap</h2><p>Browse through all available stores, categories, products, and blogs on our site using the listings below.</p>" }
+  }
 };
 
 function mergeSettings(saved) {
@@ -146,6 +153,15 @@ function mergeSettings(saved) {
         featuredProducts: { ...defaultSettings.homepage.sections.featuredProducts, ...saved.homepage?.sections?.featuredProducts },
         latestStores: { ...defaultSettings.homepage.sections.latestStores, ...saved.homepage?.sections?.latestStores },
       },
+    },
+    pages: {
+      ...defaultSettings.pages,
+      ...saved.pages,
+      about: { ...defaultSettings.pages?.about, ...saved.pages?.about },
+      contact: { ...defaultSettings.pages?.contact, ...saved.pages?.contact },
+      privacy: { ...defaultSettings.pages?.privacy, ...saved.pages?.privacy },
+      terms: { ...defaultSettings.pages?.terms, ...saved.pages?.terms },
+      sitemap: { ...defaultSettings.pages?.sitemap, ...saved.pages?.sitemap },
     },
   };
 }
