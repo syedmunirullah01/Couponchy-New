@@ -97,6 +97,7 @@ export async function proxy(req) {
 
   // Bypass out route completely
   if (pathname.startsWith("/out")) {
+    console.log("OUT ROUTE HIT:", pathname);
     return NextResponse.next();
   }
 
